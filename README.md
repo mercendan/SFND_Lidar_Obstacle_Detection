@@ -29,8 +29,12 @@ $> ./environment
 ```
 
 ### Windows 
-
+VCPKG (not working):
 http://www.pointclouds.org/downloads/windows.html
+
+Instead of that use these:
+https://github.com/PointCloudLibrary/pcl/issues/4462
+https://www.programmersought.com/article/25294932269/
 
 ### MAC
 
