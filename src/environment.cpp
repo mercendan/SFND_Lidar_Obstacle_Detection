@@ -42,20 +42,26 @@ void simpleHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)
     // ----------------------------------------------------
     
     // RENDER OPTIONS
-    bool renderScene = false;
+    bool renderScene = false; //true - draws the cars and road
     std::vector<Car> cars = initHighway(renderScene, viewer);
     
-    // TODO:: Create lidar sensor 
+    // TODO:DONE Create lidar sensor 
     Lidar* lidar = new Lidar(cars, 0);
     pcl::PointCloud<pcl::PointXYZ>::Ptr inputCloud = lidar->scan();
-    //draw laser rays
+    //debug: draw laser rays
     //renderRays(viewer, lidar->position, inputCloud);
-    // draw only pcd
-    renderPointCloud(viewer, inputCloud, "inputCloud");
+    // debug: draw only pcd
+    //renderPointCloud(viewer, inputCloud, "inputCloud");
 
-
-    // TODO:: Create point processor
-  
+    // TODO:DONE Create point processor
+    // create point processor on the stack
+    ProcessPointClouds<pcl::PointXYZ> pointProcessor;
+    std::pair<pcl::PointCloud<pcl::PointXYZ>::Ptr, pcl::PointCloud<pcl::PointXYZ>::Ptr> segmentCloud = pointProcessor.SegmentPlane(inputCloud, 100, 0.2);
+    // create point processor on the heap
+    // ProcessPointClouds<pcl::PointXYZ> * pointProcessor = new ProcessPointClouds<pcl::PointXYZ>();
+    //std::pair<pcl::PointCloud<pcl::PointXYZ>::Ptr, pcl::PointCloud<pcl::PointXYZ>::Ptr> segmentCloud = pointProcessor->SegmentPlane(inputCloud, 100, 0.2);
+    renderPointCloud(viewer, segmentCloud.first, "obstCloud", Color(1, 0, 0));
+    renderPointCloud(viewer, segmentCloud.second, "planeCloud", Color(0, 1, 0));
 }
 
 
