@@ -24,7 +24,7 @@ Then here is what the tree looks like after inserting two more points (-5.2,7.1)
 
 The image below shows so far what the tree looks like after inserting those 4 points. The labeled nodes A, B, C, D, and E are all NULL but if the next point (7.2,6.1) is inserted, whill of those 5 nodes will it be assigned to ?
 
-<img src="https://ggithub.com/mercendan/SFND_Lidar_Obstacle_Detection/blob/master/media/kdtree5.png" width="700" height="400" />
+<img src="https://github.com/mercendan/SFND_Lidar_Obstacle_Detection/blob/master/media/kdtree5.png" width="700" height="400" />
 
 The answer is D. Let's look at why this is. First the root (-6.2, 7) and the point(7.2, 6.1) x region will be compared. 7.2 is greater than -6.2 so the new point will branch off to the right to (-5.2, 7.1). Next the y region will be compared, 6.1 is less than 7.1 so the new point will branch off to the left to (-5.7,6.3). Last the x region will be compared again, 7.2 is greater than -5.7 so the new point will branch to the right and will be Node D.
 
