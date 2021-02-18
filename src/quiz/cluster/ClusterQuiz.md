@@ -4,27 +4,27 @@ A KD-Tree is a binary tree that splits points between alternating axes. By seper
 
 ## Inserting Points into the Tree
 
-<img src="https://github.com/awbrown90/SensorFusionHighway/blob/master/media/2dpoints.png" width="700" height="400" />
+<img src="https://github.com/mercendan/SFND_Lidar_Obstacle_Detection/blob/master/media/2dpoints.png" width="700" height="400" />
 
 The image above shows what the 2d points look like, in this simple example there is only 11 points, and there is 3 clusters where points are in close proximity to each other that you will be finding. First you want to create your tree, in `src/quiz/cluster/cluster.cpp` there is a function for rendering the tree after points have been inserted into it, this rendering shows line seperations, blue lines splitting x regions and red lines splitting y regions. The image below shows what the tree looks like after all 11 points have been inserted.
 
-<img src="https://github.com/awbrown90/SensorFusionHighway/blob/master/media/kdtree.png" width="700" height="400" />
+<img src="https://github.com/mercendan/SFND_Lidar_Obstacle_Detection/blob/master/media/kdtree.png" width="700" height="400" />
 
 Now lets talk about how exactly the tree is created. At the very beginning when the tree is empty, root is NULL, the point inserted becomes the root, and splits the x region. Here is what this visually looks like, after inserting the first point (-6.2, 7).
 
-<img src="https://github.com/awbrown90/SensorFusionHighway/blob/master/media/kdtree1.png" width="700" height="400" />
+<img src="https://github.com/mercendan/SFND_Lidar_Obstacle_Detection/blob/master/media/kdtree1.png" width="700" height="400" />
 
 The next point is (-6.3,8.4), since -6.3 is less than -6.2 this Node will be created and be apart of root's left node, and now the point (-6.3,8.4) will split the region in the y dimension. The root was at depth 0, and split the x region, the next point become the left child of root and had a depth of 1, and split the y region. A point at depth 2 will split the x region again, so the split can actually be calculated as depth % 2, where 2 is the number of dimensions we are working with. The image below show how the tree looks after inserting the second point.
 
-<img src="https://github.com/awbrown90/SensorFusionHighway/blob/master/media/kdtree2.png" width="700" height="400" />
+<img src="https://github.com/mercendan/SFND_Lidar_Obstacle_Detection/blob/master/media/kdtree2.png" width="700" height="400" />
 
 Then here is what the tree looks like after inserting two more points (-5.2,7.1), (-5.7,6.3), and having another x split division from point (-5.7,6.3) being at depth 2 in the tree.
 
-<img src="https://github.com/awbrown90/SensorFusionHighway/blob/master/media/kdtree4.png" width="700" height="400" />
+<img src="https://github.com/mercendan/SFND_Lidar_Obstacle_Detection/blob/master/media/kdtree4.png" width="700" height="400" />
 
 The image below shows so far what the tree looks like after inserting those 4 points. The labeled nodes A, B, C, D, and E are all NULL but if the next point (7.2,6.1) is inserted, whill of those 5 nodes will it be assigned to ?
 
-<img src="https://github.com/awbrown90/SensorFusionHighway/blob/master/media/kdtree5.png" width="700" height="400" />
+<img src="https://ggithub.com/mercendan/SFND_Lidar_Obstacle_Detection/blob/master/media/kdtree5.png" width="700" height="400" />
 
 The answer is D. Let's look at why this is. First the root (-6.2, 7) and the point(7.2, 6.1) x region will be compared. 7.2 is greater than -6.2 so the new point will branch off to the right to (-5.2, 7.1). Next the y region will be compared, 6.1 is less than 7.1 so the new point will branch off to the left to (-5.7,6.3). Last the x region will be compared again, 7.2 is greater than -5.7 so the new point will branch to the right and will be Node D.
 
