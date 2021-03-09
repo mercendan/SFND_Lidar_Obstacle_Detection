@@ -79,6 +79,6 @@ euclideanCluster(points, tree, 3.0);
 
 There are three clusters found, using a distance tolerance of 3.0. Each cluster group is colored a differently, red, green, and blue.
 
-<img src="https://github.com/awbrown90/SensorFusionHighway/blob/master/media/clusterKdtree.png" width="700" height="400" />
+<img src="https://github.com/mercendan/SFND_Lidar_Obstacle_Detection/blob/master/media/clusterkdtree.png" width="700" height="400" />
 
 
