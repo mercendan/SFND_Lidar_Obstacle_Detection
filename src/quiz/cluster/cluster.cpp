@@ -75,14 +75,67 @@ void render2DTree(Node* node, pcl::visualization::PCLVisualizer::Ptr& viewer, Bo
 
 }
 
+void clusterHelper(int index, const std::vector<std::vector<float>>& points, std::vector<int>& cluster, std::vector<bool>& processed, KdTree* tree, float distanceTol)
+{
+    processed[index] = true;
+    cluster.push_back(index);
+
+    std::vector<int> nearest = tree->search(points[index], distanceTol);
+
+    for (int id : nearest)
+    {
+        if (!processed[id]) 
+        {
+            clusterHelper(id, points, cluster, processed, tree, distanceTol);
+        }
+    }
+
+}
+
+
 std::vector<std::vector<int>> euclideanCluster(const std::vector<std::vector<float>>& points, KdTree* tree, float distanceTol)
 {
 
-	// TODO: Fill out this function to return list of indices for each cluster
+	// TODO:DONE Fill out this function to return list of indices for each cluster
 
 	std::vector<std::vector<int>> clusters;
+
+    std::vector<bool> processed(points.size(), false);
+
+    int i = 0;
+	int c = 0;
+    while (i < points.size())
+    {
+        if (processed[i])
+        {
+            i++;
+            continue;
+        }
+
+        std::vector<int> cluster;
+		c++;
+		//debug
+		std::cout << "========================= "  << std::endl;
+		std::cout << "CLUSTER: " << c  << std::endl;
+        clusterHelper(i, points, cluster, processed, tree, distanceTol);
+        clusters.push_back(cluster);
+		// debug
+    	std::cout << i << ". point: ";
+        for (int id : cluster)
+        {
+             std::cout << id << " ";
+        }
+        std::cout << std::endl;
+
+        i++;
+    }
  
 	return clusters;
+
+}
+
+int sortInsrt(std::vector<std::vector<float>>& tempPoints, int depIndx) 
+{
 
 }
 
@@ -101,13 +154,27 @@ int main ()
 
 	// Create data
 	std::vector<std::vector<float>> points = { {-6.2,7}, {-6.3,8.4}, {-5.2,7.1}, {-5.7,6.3}, {7.2,6.1}, {8.0,5.3}, {7.2,7.1}, {0.2,-7.1}, {1.7,-6.9}, {-1.2,-7.2}, {2.2,-8.9} };
-	//std::vector<std::vector<float>> points = { {-6.2,7}, {-6.3,8.4}, {-5.2,7.1}, {-5.7,6.3} };
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = CreateData(points);
 
 	KdTree* tree = new KdTree;
-  
+    
+    // not balanced insertion
     for (int i=0; i<points.size(); i++) 
     	tree->insert(points[i],i); 
+
+    // balanced insertion
+    /*
+    std::vector<std::vector<float>> tempPoints = points;
+    int i = 0, indx;
+    int depIndx;
+    while (tempPoints.size() > 0)
+    {
+        depIndx = i % 2;
+        indx = sortInsrt(tempPoints, depIndx);
+        tree->insert(tempPoints[indx], i);
+        tempPoints.erase(tempPoints.begin() + indx);
+        i++;
+    }*/
 
   	int it = 0;
   	render2DTree(tree->root,viewer,window, it);
