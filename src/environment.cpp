@@ -112,10 +112,41 @@ void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer)
     pcl::PointCloud<pcl::PointXYZI>::Ptr inputCloud = pointProcessorI.loadPcd("../../../src/sensors/data/pcd/data_1/0000000000.pcd"); //the executable file is in out/build/x64-Debug folder
     
     //draw original pointcloud
-    //renderPointCloud(viewer, inputCloud, "inputCloud");
+    renderPointCloud(viewer, inputCloud, "inputCloud");
+
+    float x_min = -10;
+    float y_min = -5;
+    float z_min = -2;
+    float x_max = 30;
+    float y_max = 8;
+    float z_max = 2;
+
+    /*
+    // helper box to figure out the cropBox size
+    Box box;
+    box.x_min = x_min;
+    box.y_min = y_min;
+    box.z_min = z_min;
+    box.x_max = x_max;
+    box.y_max = y_max;
+    box.z_max = z_max;
+    renderBox(viewer, box, 0, Color(1,0,1), 0.5f);
+    */
+
+    /*
+    // helper box to figure out the cropBox size for roof points
+    Box roofBox;
+    roofBox.x_min = -1.5;
+    roofBox.y_min = -1.7;
+    roofBox.z_min = -1.1;
+    roofBox.x_max = 2.6;
+    roofBox.y_max = 1.7;
+    roofBox.z_max = -0.4;
+    renderBox(viewer, roofBox, 0, Color(0.5, 0.5, 0.5), 0.25f);
+    */
 
     //filter point cloud
-    pcl::PointCloud<pcl::PointXYZI>::Ptr filterCloud = pointProcessorI.FilterCloud(inputCloud, 0.3 , Eigen::Vector4f(-10 , -5 , -2 , 1), Eigen::Vector4f(30 , 8 , 7 , 1));
+    pcl::PointCloud<pcl::PointXYZI>::Ptr filterCloud = pointProcessorI.FilterCloud(inputCloud, 0.3 , Eigen::Vector4f(x_min, y_min, z_min, 1), Eigen::Vector4f(x_max, y_max, z_max, 1));
     //draw filtered pointcloud
     renderPointCloud(viewer, filterCloud, "filterCloud");
 }
