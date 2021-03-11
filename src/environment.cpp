@@ -99,6 +99,9 @@ void simpleHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)
 
 void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer)
 {
+    
+    bool rendrer_obst = true;
+    bool rendrer_plane = true;
     // ----------------------------------------------------
     // -----Open 3D viewer and display City Block     -----
     // ----------------------------------------------------
@@ -149,6 +152,16 @@ void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer)
     pcl::PointCloud<pcl::PointXYZI>::Ptr filterCloud = pointProcessorI.FilterCloud(inputCloud, 0.3 , Eigen::Vector4f(x_min, y_min, z_min, 1), Eigen::Vector4f(x_max, y_max, z_max, 1));
     //draw filtered pointcloud
     renderPointCloud(viewer, filterCloud, "filterCloud");
+
+
+    // SEGMENTATION
+    std::pair<pcl::PointCloud<pcl::PointXYZI>::Ptr, pcl::PointCloud<pcl::PointXYZI>::Ptr> segmentCloud = pointProcessorI.SegmentPlane(filterCloud, 100, 0.2);
+    if (rendrer_obst)
+        renderPointCloud(viewer, segmentCloud.first, "obstCloud", Color(1, 0, 0));
+    if (rendrer_plane)
+        renderPointCloud(viewer, segmentCloud.second, "planeCloud", Color(0, 1, 0));
+
+
 }
 
 
