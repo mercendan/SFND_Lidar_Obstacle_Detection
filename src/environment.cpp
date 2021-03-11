@@ -112,7 +112,7 @@ void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer)
     pcl::PointCloud<pcl::PointXYZI>::Ptr inputCloud = pointProcessorI.loadPcd("../../../src/sensors/data/pcd/data_1/0000000000.pcd"); //the executable file is in out/build/x64-Debug folder
     
     //draw original pointcloud
-    renderPointCloud(viewer, inputCloud, "inputCloud");
+    //renderPointCloud(viewer, inputCloud, "inputCloud");
 
     float x_min = -10;
     float y_min = -5;
