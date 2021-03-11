@@ -162,7 +162,7 @@ std::vector<typename pcl::PointCloud<PointT>::Ptr> ProcessPointClouds<PointT>::C
     tree->setInputCloud(cloud);
 
     std::vector<pcl::PointIndices> clusterIndices;
-    pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
+    pcl::EuclideanClusterExtraction<PointT> ec;
     ec.setClusterTolerance(clusterTolerance); // 0.02 = 2cm
     ec.setMinClusterSize(minSize);
     ec.setMaxClusterSize(maxSize);
