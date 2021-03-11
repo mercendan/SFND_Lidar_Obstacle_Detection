@@ -106,11 +106,18 @@ void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer)
     // create point processor on the heap
     //ProcessPointClouds<pcl::PointXYZI>* pointProcessorI = new ProcessPointClouds<pcl::PointXYZI>();
     //pcl::PointCloud<pcl::PointXYZI>::Ptr inputCloud = pointProcessorI->loadPcd("../src/sensors/data/pcd/data_1/0000000000.pcd");
+    
     // create point processor on the stack
     ProcessPointClouds<pcl::PointXYZI> pointProcessorI;
     pcl::PointCloud<pcl::PointXYZI>::Ptr inputCloud = pointProcessorI.loadPcd("../../../src/sensors/data/pcd/data_1/0000000000.pcd"); //the executable file is in out/build/x64-Debug folder
     
-    renderPointCloud(viewer, inputCloud, "inputCloud");
+    //draw original pointcloud
+    //renderPointCloud(viewer, inputCloud, "inputCloud");
+
+    //filter point cloud
+    pcl::PointCloud<pcl::PointXYZI>::Ptr filterCloud = pointProcessorI.FilterCloud(inputCloud, 0.3 , Eigen::Vector4f(-10 , -5 , -2 , 1), Eigen::Vector4f(30 , 8 , 7 , 1));
+    //draw filtered pointcloud
+    renderPointCloud(viewer, filterCloud, "filterCloud");
 }
 
 

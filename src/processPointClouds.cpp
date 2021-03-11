@@ -27,13 +27,49 @@ typename pcl::PointCloud<PointT>::Ptr ProcessPointClouds<PointT>::FilterCloud(ty
     // Time segmentation process
     auto startTime = std::chrono::steady_clock::now();
 
-    // TODO:: Fill in the function to do voxel grid point reduction and region based filtering
+    // TODO:DONE Fill in the function to do voxel grid point reduction and region based filtering
+
+    // Create the VoxelGrid filtering object
+    pcl::VoxelGrid<PointT> vg;
+    typename pcl::PointCloud<PointT>::Ptr cloudFiltered(new pcl::PointCloud<PointT>);
+    //std::cout << typeid(vg).name() << endl;
+    vg.setInputCloud(cloud);
+    vg.setLeafSize(filterRes, filterRes, filterRes); // downsample the dataset using a leaf size of .2m
+    vg.filter(*cloudFiltered);
+
+    //region based filtering
+    typename pcl::PointCloud<PointT>::Ptr cloudRegion(new pcl::PointCloud<PointT>);
+    pcl::CropBox<PointT> region(true);
+    region.setMin(minPoint);
+    region.setMax(maxPoint);
+    region.setInputCloud(cloudFiltered);
+    region.filter(*cloudRegion);
+
+    //remove roof points from the cloud
+    // cloect indices inside of box
+    std::vector<int> indices;
+    pcl::CropBox<PointT> roof(true);
+    region.setMin(Eigen::Vector4f(-1.5, -1.7, -1.1, 1));
+    region.setMax(Eigen::Vector4f(2.6, 1.7, -0.4, 1));
+    region.setInputCloud(cloudRegion);
+    region.filter(indices);
+    //create inliers from indices
+    pcl::PointIndices::Ptr inliers{ new pcl::PointIndices };
+    for (int point : indices)
+        inliers->indices.push_back(point);
+    //remove indices from cloudRegion
+    pcl::ExtractIndices<PointT> extract;
+    extract.setInputCloud(cloudRegion);
+    extract.setIndices(inliers);
+    extract.setNegative(true);
+    extract.filter(*cloudRegion);
+    
 
     auto endTime = std::chrono::steady_clock::now();
     auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
     std::cout << "filtering took " << elapsedTime.count() << " milliseconds" << std::endl;
 
-    return cloud;
+    return cloudRegion;
 
 }
 
