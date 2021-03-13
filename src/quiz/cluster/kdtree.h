@@ -38,7 +38,7 @@ struct KdTree
 			if(point[cd] < ((*node)->point[cd]))
 				insertHelper(&((*node)->left), depth+1, point, id);
 			else
-				insertHelper(&((*node)->left), depth+1, point, id);
+				insertHelper(&((*node)->right), depth+1, point, id);
 		}
 	}
 

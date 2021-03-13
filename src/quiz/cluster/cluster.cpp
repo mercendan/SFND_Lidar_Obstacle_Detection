@@ -5,6 +5,10 @@
 #include "../../render/box.h"
 #include <chrono>
 #include <string>
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <cmath>
 #include "kdtree.h"
 
 // Arguments:
@@ -134,9 +138,48 @@ std::vector<std::vector<int>> euclideanCluster(const std::vector<std::vector<flo
 
 }
 
-int sortInsrt(std::vector<std::vector<float>>& tempPoints, int depIndx) 
+std::vector<std::vector<float>> findMedian(std::vector<std::vector<std::vector<float>>>& tempPoints, int depIndx, int pointDim)
 {
+    std::vector<std::vector<float>> medianPoints;
+    std::vector<std::vector<std::vector<float>>> newVectors;
+    depIndx = depIndx % pointDim;
 
+    int tempPointSize = tempPoints.size();
+    std::cout << std::endl << "===================================" << std::endl;
+    std::cout << "Size of the tempPoint vector: " << tempPointSize << std::endl;
+    for (auto points : tempPoints) 
+    {
+        std::sort(points.begin(), points.end(), [&depIndx](const std::vector<float>& a, const std::vector<float>& b) {return a[depIndx] < b[depIndx]; });
+        int pointSize = points.size();
+        int median;
+        std::cout << "Size of the point vector: " << pointSize << std::endl;
+        median = floor(pointSize / 2.0)+1;
+        std::cout << "Median index: " << median << std::endl;
+        std::cout << points[median-1][0] << "," << points[median - 1][1] << std::endl << std::endl;
+
+        medianPoints.push_back(points[median - 1]);
+
+        std::cout << "{";
+        for (auto i : points) 
+        {
+            std::cout << "{";
+            for (auto j : i)
+                std::cout << j << ",";
+            std::cout << "},";
+        }
+        std::cout << "}" << std::endl;
+        
+        std::vector<std::vector<float>> firstHalf(points.begin(), points.begin() + median - 1);
+        std::vector<std::vector<float>> secondHalf(points.begin() + median, points.end());
+        if(firstHalf.size()>=1)
+            newVectors.push_back(firstHalf);
+        if (secondHalf.size() >= 1)
+            newVectors.push_back(secondHalf);
+    }
+    tempPoints.insert(tempPoints.end(), newVectors.begin(), newVectors.end());
+    tempPoints.erase(tempPoints.begin(), tempPoints.begin() + tempPointSize);
+
+    return medianPoints;
 }
 
 int main ()
@@ -153,28 +196,52 @@ int main ()
 	pcl::visualization::PCLVisualizer::Ptr viewer = initScene(window, 25);
 
 	// Create data
-	std::vector<std::vector<float>> points = { {-6.2,7}, {-6.3,8.4}, {-5.2,7.1}, {-5.7,6.3}, {7.2,6.1}, {8.0,5.3}, {7.2,7.1}, {0.2,-7.1}, {1.7,-6.9}, {-1.2,-7.2}, {2.2,-8.9} };
-	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = CreateData(points);
+	std::vector<std::vector<float>>  points = { {-6.2,7}, {-6.3,8.4}, {-5.2,7.1}, {-5.7,6.3}, {7.2,6.1}, {8.0,5.3}, {7.2,7.1}, {0.2,-7.1}, {1.7,-6.9}, {-1.2,-7.2}, {2.2,-8.9} };
+    
+    // balanced insertion
+    std::vector <std::vector<std::vector<float>>> tempPoints;
+    tempPoints.push_back(points);
+    
+    int depth = 0;
+    int pointDim = 2;
+    points.erase(points.begin(), points.end());
+    std::vector<std::vector<float>> medianPoints;
+    while (tempPoints.size()>=1) {
+        std::cout << "***************"<< std::endl;
+        std::cout << "Depth: " << depth << std::endl;
+        std::cout << "***************" << std::endl;
+        medianPoints = findMedian(tempPoints, depth, pointDim);
+        points.insert(points.end(), medianPoints.begin(), medianPoints.end());
+        depth++;
+        std::cout << std::endl << "Median points: ";
+        for (auto i : medianPoints)
+        {
+            std::cout << "{";
+            for (auto j : i)
+                std::cout << j << ",";
+            std::cout << "},";
+        }
+        std::cout << std::endl;
+    }
+    std::cout << "The new Point size: " << points.size() << std::endl;
+    std::cout << "{";
+    for (auto i : points)
+    {
+        std::cout << "{";
+        for (auto j : i)
+            std::cout << j << ",";
+        std::cout << "},";
+    }
+    std::cout << "}" << std::endl;
+    
+
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = CreateData(points);
 
 	KdTree* tree = new KdTree;
     
     // not balanced insertion
     for (int i=0; i<points.size(); i++) 
     	tree->insert(points[i],i); 
-
-    // balanced insertion
-    /*
-    std::vector<std::vector<float>> tempPoints = points;
-    int i = 0, indx;
-    int depIndx;
-    while (tempPoints.size() > 0)
-    {
-        depIndx = i % 2;
-        indx = sortInsrt(tempPoints, depIndx);
-        tree->insert(tempPoints[indx], i);
-        tempPoints.erase(tempPoints.begin() + indx);
-        i++;
-    }*/
 
   	int it = 0;
   	render2DTree(tree->root,viewer,window, it);
