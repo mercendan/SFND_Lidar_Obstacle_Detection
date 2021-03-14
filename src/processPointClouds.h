@@ -19,6 +19,7 @@
 #include <chrono>
 #include <unordered_set>
 #include "render/box.h"
+#include "kdtree3D.h"
 
 template<typename PointT>
 class ProcessPointClouds {
@@ -39,6 +40,16 @@ public:
 
     std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT>::Ptr> SegmentPlane(typename pcl::PointCloud<PointT>::Ptr cloud, int maxIterations, float distanceThreshold);
 
+    void clusterHelper(int index, const std::vector<std::vector<float>>& points, std::vector<int>& cluster, std::vector<bool>& processed, KdTree* tree, float distanceTol);
+
+    std::vector<std::vector<int>> euclideanCluster(const std::vector<std::vector<float>>& points, KdTree* tree, float distanceTol);
+
+    typename pcl::PointCloud<PointT>::Ptr CreateVectorToPointCloudData(std::vector<std::vector<float>> points);
+
+    std::vector<std::vector<float>> CreatePointCloudToVectorData(typename pcl::PointCloud<PointT>::Ptr cloud);
+
+    std::vector<std::vector<float>> findMedian(std::vector<std::vector<std::vector<float>>>& tempPoints, int depIndx, int pointDim);
+
     std::vector<typename pcl::PointCloud<PointT>::Ptr> Clustering(typename pcl::PointCloud<PointT>::Ptr cloud, float clusterTolerance, int minSize, int maxSize);
 
     Box BoundingBox(typename pcl::PointCloud<PointT>::Ptr cluster);
@@ -48,6 +59,6 @@ public:
     typename pcl::PointCloud<PointT>::Ptr loadPcd(std::string file);
 
     std::vector<boost::filesystem::path> streamPcd(std::string dataPath);
-  
+
 };
 #endif /* PROCESSPOINTCLOUDS_H_ */
